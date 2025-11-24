@@ -123,16 +123,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const correctAnswer = question.definition;
 
         imageContainer.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = generateImage(question.word);
-        img.alt = `Image for ${question.word}`;
-        img.onerror = () => { imageContainer.innerHTML = `<div class="placeholder-image">Image for ${question.word}</div>`; };
-        imageContainer.appendChild(img);
+        const imageUrl = question.image || generateImage(question.word); // Use provided image or generate placeholder
+        const imgElement = document.createElement('img');
+        imgElement.src = imageUrl;
+        imgElement.alt = `รูปภาพสำหรับคำว่า ${question.word}`;
+        imgElement.onerror = () => { imageContainer.innerHTML = `<div class="placeholder-image">ไม่มีรูปภาพสำหรับ ${question.word}</div>`; };
+        imageContainer.appendChild(imgElement);
 
         const wrongAnswers = vocabulary.filter(item => item.definition !== correctAnswer).sort(() => 0.5 - Math.random()).slice(0, 3).map(item => item.definition);
         const choices = [correctAnswer, ...wrongAnswers].sort(() => 0.5 - Math.random());
 
-        questionTitle.textContent = `Question ${currentQuestionIndex + 1}/${currentQuestions.length}`;
+        questionTitle.textContent = `คำถามที่ ${currentQuestionIndex + 1}/${currentQuestions.length}`;
         questionWord.textContent = question.word;
 
         choicesContainer.innerHTML = '';
@@ -152,12 +153,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const isCorrect = selectedChoice === correctChoice;
         if (isCorrect) {
             score++;
-            feedback.textContent = 'Correct!';
+            feedback.textContent = 'ถูกต้อง!';
             feedback.className = 'feedback correct';
             button.style.backgroundColor = 'var(--success-color)';
             button.style.borderColor = 'var(--success-color)';
         } else {
-            feedback.textContent = 'Incorrect!';
+            feedback.textContent = 'คำตอบผิด!';
             feedback.className = 'feedback incorrect';
             button.style.backgroundColor = 'var(--error-color)';
             button.style.borderColor = 'var(--error-color)';
@@ -182,8 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function showResults() {
         progressBar.style.width = '100%';
         const totalQuestions = currentQuestions.length;
-        resultTitle.textContent = `Quiz Complete!`;
-        resultScore.textContent = `You scored ${score} out of ${totalQuestions}.`;
+        resultTitle.textContent = `สิ้นสุดแบบทดสอบ!`;
+        resultScore.textContent = `คุณได้ ${score} จาก ${totalQuestions} คะแนน`;
 
         const history = JSON.parse(localStorage.getItem('quizHistory')) || [];
         const newHistoryEntry = {
@@ -208,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentQuestions.length > 0 && currentQuestionIndex > 0) {
             const totalQuestions = currentQuestions.length;
             const history = JSON.parse(localStorage.getItem('quizHistory')) || [];
-            const newHistoryEntry = { mode: currentMode, score: `${score}/${currentQuestionIndex} (Incomplete)`, date: new Date().toISOString(), answeredQuestions };
+            const newHistoryEntry = { mode: currentMode, score: `${score}/${currentQuestionIndex} (ยังไม่จบ)`, date: new Date().toISOString(), answeredQuestions };
             history.push(newHistoryEntry);
             localStorage.setItem('quizHistory', JSON.stringify(history));
         }
@@ -219,11 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayHistory() {
         const history = JSON.parse(localStorage.getItem('quizHistory')) || [];
         if (history.length === 0) {
-            fullHistoryContainer.innerHTML = '<p style="text-align: center; margin-top: 2rem;">No history yet. Play a game!</p>';
+            fullHistoryContainer.innerHTML = '<p style="text-align: center; margin-top: 2rem;">ยังไม่มีประวัติการเล่น ลองเล่นสักเกมสิ!</p>';
             return;
         }
         const table = document.createElement('table');
-        table.innerHTML = `<thead><tr><th>Date</th><th>Mode</th><th>Score</th></tr></thead>
+        table.innerHTML = `<thead><tr><th>วันที่</th><th>โหมด</th><th>คะแนน</th></tr></thead>
             <tbody>
                 ${history.sort((a, b) => new Date(b.date) - new Date(a.date)).map(entry => `
                     <tr><td>${new Date(entry.date).toLocaleString()}</td><td>${entry.mode}</td><td>${entry.score}</td></tr>`).join('')}
@@ -248,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderCustomList() {
         customListContainer.innerHTML = ''; // Clear current list
         if (customVocabularyList.length === 0) {
-            customListContainer.innerHTML = `<p id="custom-list-placeholder">Your words will appear here. Add at least 4 to start.</p>`;
+            customListContainer.innerHTML = `<p id="custom-list-placeholder">คำศัพท์ของคุณจะปรากฏที่นี่ เพิ่มอย่างน้อย 4 คำเพื่อเริ่ม</p>`;
         } else {
             customVocabularyList.forEach((item, index) => {
                 const listItem = document.createElement('div');
@@ -270,12 +271,12 @@ document.addEventListener('DOMContentLoaded', () => {
     async function translateAndAddWord() {
         const word = customWordInput.value.trim();
         if (!word) {
-            alert('Please enter a word.');
+            alert('กรุณาป้อนคำศัพท์');
             return;
         }
 
         addWordBtn.disabled = true;
-        addWordBtn.textContent = 'Translating...';
+        addWordBtn.textContent = 'กำลังแปล...';
 
         // Detect if the input is Thai to set the correct language pair for translation
         const isInputThai = /[\u0E00-\u0E7F]/.test(word);
@@ -301,10 +302,10 @@ document.addEventListener('DOMContentLoaded', () => {
             renderCustomList();
         } catch (error) {
             console.error('Translation error:', error);
-            alert('Could not translate the word. Please try again or enter the definition manually.');
+            alert('ไม่สามารถแปลคำศัพท์ได้ กรุณาลองใหม่อีกครั้ง');
         } finally {
             addWordBtn.disabled = false;
-            addWordBtn.textContent = 'Translate and Add';
+            addWordBtn.textContent = 'แปลและเพิ่มคำศัพท์';
         }
     }
 
@@ -366,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
     backToHomeBtn.addEventListener('click', saveAndExit);
 
     clearHistoryBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to clear all history? This cannot be undone.')) {
+        if (confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างประวัติทั้งหมด? การกระทำนี้ไม่สามารถย้อนกลับได้')) {
             localStorage.removeItem('quizHistory');
             displayHistory();
         }
