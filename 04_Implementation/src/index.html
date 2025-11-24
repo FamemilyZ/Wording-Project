@@ -43,7 +43,7 @@
             <h2>Build Your Custom Quiz</h2>
             <div id="custom-vocab-form">
                 <div class="form-row">
-                    <input type="text" id="custom-word-input" placeholder="Enter an English word">
+                    <input type="text" id="custom-word-input" placeholder="Enter an English or Thai word">
                 </div>
                 <button id="add-word-btn" class="btn">Translate and Add</button>
             </div>
@@ -52,7 +52,8 @@
                 <!-- Dynamically added words will go here -->
             </div>
             <div class="custom-screen-controls">
-                <button id="start-custom-quiz-btn" class="btn" disabled>Start Quiz</button>
+                <input type="text" id="custom-level-name-input" placeholder="ตั้งชื่อด่านของคุณ (เช่น คำศัพท์หมวดผลไม้)">
+                <button id="save-custom-level-btn" class="btn" disabled>บันทึกด่าน</button>
                 <button class="btn btn-secondary back-btn">Back to Modes</button>
             </div>
         </div>
@@ -66,10 +67,6 @@
                 </div>
             </div>
             <div class="quiz-content">
-                <div id="image-container" class="image-container">
-                    <!-- Image will be generated here -->
-                    <div class="placeholder-image">Image will appear here</div>
-                </div>
                 <div class="question-container">
                     <p id="question-word" class="question-word"></p>
                     <div id="choices-container" class="choices-container">

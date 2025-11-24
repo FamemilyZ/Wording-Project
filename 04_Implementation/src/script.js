@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const customWordInput = document.getElementById('custom-word-input');
     const addWordBtn = document.getElementById('add-word-btn');
     const customListContainer = document.getElementById('custom-list-container');
-    const startCustomQuizBtn = document.getElementById('start-custom-quiz-btn');
+    const saveCustomLevelBtn = document.getElementById('save-custom-level-btn');
+    const customLevelNameInput = document.getElementById('custom-level-name-input');
 
     // Quiz Screen Elements
     const questionTitle = document.getElementById('question-title');
@@ -23,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedback = document.getElementById('feedback');
     const nextQuestionBtn = document.getElementById('next-question-btn');
     const progressBar = document.getElementById('progress-bar');
-    const imageContainer = document.getElementById('image-container');
 
     // Result Screen Elements
     const resultTitle = document.getElementById('result-title');
@@ -75,11 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function hideHistoryModal() {
         historyScreen.classList.remove('active');
     }
-    
-    function generateImage(text) {
-        const encodedText = encodeURIComponent(text);
-        return `https://via.placeholder.com/400x300/1f2937/e5e7eb?text=${encodedText}`;
-    }
 
     function startQuiz(vocabList, mode) {
         if (vocabList.length < 4) {
@@ -121,14 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const question = currentQuestions[currentQuestionIndex];
         const correctAnswer = question.definition;
-
-        imageContainer.innerHTML = '';
-        const imageUrl = question.image || generateImage(question.word); // Use provided image or generate placeholder
-        const imgElement = document.createElement('img');
-        imgElement.src = imageUrl;
-        imgElement.alt = `รูปภาพสำหรับคำว่า ${question.word}`;
-        imgElement.onerror = () => { imageContainer.innerHTML = `<div class="placeholder-image">ไม่มีรูปภาพสำหรับ ${question.word}</div>`; };
-        imageContainer.appendChild(imgElement);
 
         const wrongAnswers = vocabulary.filter(item => item.definition !== correctAnswer).sort(() => 0.5 - Math.random()).slice(0, 3).map(item => item.definition);
         const choices = [correctAnswer, ...wrongAnswers].sort(() => 0.5 - Math.random());
@@ -236,7 +223,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function populateLevels() {
         if (!levelButtonsContainer) return;
         levelButtonsContainer.innerHTML = '';
-        quizLevels.forEach(levelData => {
+
+        // Load custom levels and combine with default levels
+        const customLevels = JSON.parse(localStorage.getItem('customQuizLevels')) || [];
+        const allLevels = [...quizLevels, ...customLevels];
+
+        allLevels.forEach(levelData => {
             const button = document.createElement('button');
             button.className = 'btn';
             button.textContent = levelData.name;
@@ -265,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         // Update button state
-        startCustomQuizBtn.disabled = customVocabularyList.length < 4;
+        updateSaveButtonState();
     }
 
     async function translateAndAddWord() {
@@ -317,6 +309,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function updateSaveButtonState() {
+        const levelName = customLevelNameInput.value.trim();
+        saveCustomLevelBtn.disabled = customVocabularyList.length < 4 || !levelName;
+    }
+
+    function saveCustomLevel() {
+        const levelName = customLevelNameInput.value.trim();
+        if (customVocabularyList.length < 4) {
+            alert('กรุณาเพิ่มคำศัพท์อย่างน้อย 4 คำ');
+            return;
+        }
+        if (!levelName) {
+            alert('กรุณาตั้งชื่อด่านของคุณ');
+            return;
+        }
+
+        const customLevels = JSON.parse(localStorage.getItem('customQuizLevels')) || [];
+        
+        const newLevel = {
+            level: `c${Date.now()}`, // Unique ID for the custom level
+            name: levelName,
+            vocab: customVocabularyList
+        };
+
+        customLevels.push(newLevel);
+        localStorage.setItem('customQuizLevels', JSON.stringify(customLevels));
+
+        alert(`บันทึกด่าน "${levelName}" เรียบร้อยแล้ว!`);
+        
+        // Reset and go to level selection screen
+        customVocabularyList = [];
+        customLevelNameInput.value = '';
+        renderCustomList();
+        populateLevels(); // Refresh the level list
+        showScreen('level-screen');
+    }
+
     // --- Event Listeners ---
     levelModeBtn.addEventListener('click', () => showScreen('level-screen'));
     customModeBtn.addEventListener('click', () => {
@@ -333,11 +362,8 @@ document.addEventListener('DOMContentLoaded', () => {
             translateAndAddWord();
         }
     });
-    startCustomQuizBtn.addEventListener('click', () => {
-        if (customVocabularyList.length >= 4) {
-            startQuiz(customVocabularyList, 'Custom');
-        }
-    });
+    customLevelNameInput.addEventListener('input', updateSaveButtonState);
+    saveCustomLevelBtn.addEventListener('click', saveCustomLevel);
 
 
     nextQuestionBtn.addEventListener('click', () => {

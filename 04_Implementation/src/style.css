@@ -232,7 +232,7 @@ textarea#vocab-input:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
 }
-.custom-screen-controls { display: flex; gap: 1rem; justify-content: center; }
+.custom-screen-controls { display: flex; gap: 1rem; justify-content: center; align-items: center; flex-wrap: wrap; }
 
 /* --- Quiz Screen --- */
 .quiz-header {
@@ -257,40 +257,19 @@ textarea#vocab-input:focus {
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: 2rem;
+    justify-content: center; /* Center the content vertically */
     align-items: center;
     flex-grow: 1;
 }
-@media (min-width: 768px) {
-    .quiz-content { flex-direction: row; }
-}
 
-.image-container {
-    flex: 1 1 40%;
-    width: 100%;
-    max-width: 350px;
-    aspect-ratio: 4 / 3;
-    background-color: var(--background-color);
-    border-radius: var(--border-radius);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    box-shadow: var(--shadow-inner);
-    border: 1px solid #333;
-}
-.placeholder-image {
-    font-style: italic;
-    color: var(--secondary-color);
-}
+
 .question-container {
-    flex: 1 1 60%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.question-word {
+        width: 100%;
+        max-width: 600px; /* Add a max-width to avoid being too wide */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }.question-word {
     font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: bold;
     margin: 0 0 1.5rem 0;
@@ -440,7 +419,8 @@ textarea#vocab-input:focus {
     }
 }
 
-#custom-vocab-form input[type="text"] {
+#custom-vocab-form input[type="text"],
+#custom-level-name-input {
     flex-grow: 1;
     background-color: #333;
     color: var(--text-color);
@@ -452,7 +432,8 @@ textarea#vocab-input:focus {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-#custom-vocab-form input[type="text"]:focus {
+#custom-vocab-form input[type="text"]:focus,
+#custom-level-name-input:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
