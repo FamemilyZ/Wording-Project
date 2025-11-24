@@ -1,13 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements ---
+    // Auth Elements
+    const loginScreen = document.getElementById('login-screen');
+    const appContainer = document.getElementById('app-container');
+    const mainHeader = document.querySelector('.main-header');
+    
+    const emailInput = document.getElementById('email-input');
+    const passwordInput = document.getElementById('password-input');
+    const loginBtn = document.getElementById('login-btn');
+    const signupBtn = document.getElementById('signup-btn');
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    const userDisplay = document.getElementById('user-display');
+    const authError = document.getElementById('auth-error');
+    
+    // App Elements
     const screens = document.querySelectorAll('.screen');
-    const startAppBtn = document.getElementById('start-app-btn');
     const historyScreen = document.getElementById('history-screen');
     const levelModeBtn = document.getElementById('level-mode-btn');
     const customModeBtn = document.getElementById('custom-mode-btn');
     const historyBtn = document.getElementById('history-btn');
     const backBtns = document.querySelectorAll('.back-btn');
-    const backBtnWelcome = document.querySelector('.back-btn-welcome');
     const restartBtn = document.getElementById('restart-btn');
     
     // Custom Mode Elements
@@ -16,6 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const customListContainer = document.getElementById('custom-list-container');
     const saveCustomLevelBtn = document.getElementById('save-custom-level-btn');
     const customLevelNameInput = document.getElementById('custom-level-name-input');
+    const goToCreateLevelBtn = document.getElementById('go-to-create-level-btn');
+    const myLevelsContainer = document.getElementById('my-levels-container');
 
     // Quiz Screen Elements
     const questionTitle = document.getElementById('question-title');
@@ -37,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const levelButtonsContainer = document.getElementById('level-buttons');
 
     // --- State ---
+    let currentUser = null;
     let vocabulary = [];
     let currentQuestions = [];
     let currentQuestionIndex = 0;
@@ -44,27 +61,97 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentMode = '';
     let answeredQuestions = [];
     let customVocabularyList = [];
+    let editingLevelId = null;
 
-    // --- Functions ---
+    // --- Auth UI Functions ---
+    function handleLoggedIn(user) {
+        currentUser = user;
+        document.body.classList.add('logged-in');
+        loginScreen.classList.remove('active');
+        mainHeader.style.display = 'flex';
+        appContainer.style.display = 'flex';
+        
+        userDisplay.textContent = user.displayName || user.email;
+        logoutBtn.style.display = 'inline-block';
+
+        showScreen('mode-screen');
+        populateLevels();
+    }
+
+    function handleLoggedOut() {
+        currentUser = null;
+        document.body.classList.remove('logged-in');
+        loginScreen.classList.add('active');
+        mainHeader.style.display = 'none';
+        appContainer.style.display = 'none';
+        
+        userDisplay.textContent = '';
+        logoutBtn.style.display = 'none';
+        
+        document.querySelectorAll('#app-container .screen').forEach(s => s.classList.remove('active'));
+    }
+    
+    function getFriendlyAuthError(error) {
+        switch (error.code) {
+            case 'auth/user-not-found':
+                return 'ไม่พบผู้ใช้งานนี้ กรุณาตรวจสอบอีเมลหรือสมัครสมาชิก';
+            case 'auth/wrong-password':
+            case 'auth/operation-not-allowed':
+                return 'รหัสผ่านไม่ถูกต้อง';
+            case 'auth/missing-password':
+                return 'โปรดกรอกรหัสผ่าน';
+            case 'auth/missing-email':
+                return 'โปรดระบุอีเมล';
+            case 'auth/invalid-email':
+                return 'รูปแบบอีเมลไม่ถูกต้อง';
+            case 'auth/email-already-in-use':
+                return 'อีเมลนี้มีผู้ใช้งานในระบบแล้ว กรุณาใช้อีเมลอื่น';
+            case 'auth/weak-password':
+                return 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร';
+            default:
+                return 'เกิดข้อผิดพลาดในการยืนยันตัวตน: ' + error.message;
+        }
+    }
+
+    function showAuthError(error) {
+        authError.textContent = getFriendlyAuthError(error);
+        authError.style.display = 'block';
+    }
+
+    function clearAuthError() {
+        authError.textContent = '';
+        authError.style.display = 'none';
+    }
+
+    // --- Core App Functions ---
     
     function showScreen(screenId) {
-        const currentScreen = document.querySelector('.screen.active');
         const nextScreen = document.getElementById(screenId);
+        if (!nextScreen) return;
 
-        if (currentScreen && nextScreen && currentScreen !== nextScreen) {
-            currentScreen.classList.add('exiting');
-            const handleTransitionEnd = () => {
-                currentScreen.classList.remove('active', 'exiting');
-                void nextScreen.offsetWidth; 
-                nextScreen.classList.add('active');
-                currentScreen.removeEventListener('transitionend', handleTransitionEnd);
+        const currentScreen = document.querySelector('#app-container .screen.active');
+
+        if (currentScreen) {
+            if (currentScreen === nextScreen) return; // Don't animate if it's the same screen
+
+            currentScreen.classList.add('slide-out');
+            
+            const onAnimationEnd = () => {
+                currentScreen.classList.remove('active');
+                currentScreen.classList.remove('slide-out');
+                currentScreen.removeEventListener('animationend', onAnimationEnd);
             };
-            currentScreen.addEventListener('transitionend', handleTransitionEnd);
-        } else if (!currentScreen && nextScreen) {
-            nextScreen.classList.add('active');
-        } else if (currentScreen && !nextScreen) {
-            currentScreen.classList.remove('active');
+            currentScreen.addEventListener('animationend', onAnimationEnd);
         }
+        
+        nextScreen.classList.add('active'); // This makes it display: flex
+        nextScreen.classList.add('slide-in');
+
+        const onNextAnimationEnd = () => {
+            nextScreen.classList.remove('slide-in');
+            nextScreen.removeEventListener('animationend', onNextAnimationEnd);
+        };
+        nextScreen.addEventListener('animationend', onNextAnimationEnd);
     }
 
     function showHistoryModal() {
@@ -224,11 +311,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!levelButtonsContainer) return;
         levelButtonsContainer.innerHTML = '';
 
-        // Load custom levels and combine with default levels
-        const customLevels = JSON.parse(localStorage.getItem('customQuizLevels')) || [];
-        const allLevels = [...quizLevels, ...customLevels];
-
-        allLevels.forEach(levelData => {
+        // Only show the built-in levels. Custom levels are now in their own screen.
+        quizLevels.forEach(levelData => {
             const button = document.createElement('button');
             button.className = 'btn';
             button.textContent = levelData.name;
@@ -239,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- New Custom Mode Functions ---
     function renderCustomList() {
-        customListContainer.innerHTML = ''; // Clear current list
+        customListContainer.innerHTML = '';
         if (customVocabularyList.length === 0) {
             customListContainer.innerHTML = `<p id="custom-list-placeholder">คำศัพท์ของคุณจะปรากฏที่นี่ เพิ่มอย่างน้อย 4 คำเพื่อเริ่ม</p>`;
         } else {
@@ -256,21 +340,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 customListContainer.appendChild(listItem);
             });
         }
-        // Update button state
         updateSaveButtonState();
     }
 
     async function translateAndAddWord() {
         const word = customWordInput.value.trim();
-        if (!word) {
-            alert('กรุณาป้อนคำศัพท์');
-            return;
-        }
+        if (!word) return;
 
         addWordBtn.disabled = true;
         addWordBtn.textContent = 'กำลังแปล...';
 
-        // Detect if the input is Thai to set the correct language pair for translation
         const isInputThai = /[\u0E00-\u0E7F]/.test(word);
         const langpair = isInputThai ? 'th|en' : 'en|th';
 
@@ -278,13 +357,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=${langpair}`);
             const data = await response.json();
             
-            if (data.responseStatus !== 200) {
-                 throw new Error(data.responseDetails);
-            }
+            if (data.responseStatus !== 200) throw new Error(data.responseDetails);
 
             const translatedText = data.responseData.translatedText;
-
-            // The quiz structure is always English word with other language definition.
             const quizWord = isInputThai ? translatedText : word;
             const quizDefinition = isInputThai ? word : translatedText;
 
@@ -314,76 +389,195 @@ document.addEventListener('DOMContentLoaded', () => {
         saveCustomLevelBtn.disabled = customVocabularyList.length < 4 || !levelName;
     }
 
-    function saveCustomLevel() {
+    async function saveCustomLevel() {
         const levelName = customLevelNameInput.value.trim();
-        if (customVocabularyList.length < 4) {
-            alert('กรุณาเพิ่มคำศัพท์อย่างน้อย 4 คำ');
-            return;
-        }
-        if (!levelName) {
-            alert('กรุณาตั้งชื่อด่านของคุณ');
-            return;
-        }
+        if (customVocabularyList.length < 4) return alert('กรุณาเพิ่มคำศัพท์อย่างน้อย 4 คำ');
+        if (!levelName) return alert('กรุณาตั้งชื่อด่านของคุณ');
+        if (!currentUser) return alert('กรุณาเข้าสู่ระบบเพื่อบันทึกด่าน');
 
-        const customLevels = JSON.parse(localStorage.getItem('customQuizLevels')) || [];
-        
-        const newLevel = {
-            level: `c${Date.now()}`, // Unique ID for the custom level
-            name: levelName,
-            vocab: customVocabularyList
+        const levelData = { 
+            name: levelName, 
+            vocab: customVocabularyList,
+            lastUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        customLevels.push(newLevel);
-        localStorage.setItem('customQuizLevels', JSON.stringify(customLevels));
+        const saveBtnOriginalText = saveCustomLevelBtn.textContent;
+        saveCustomLevelBtn.disabled = true;
+        saveCustomLevelBtn.textContent = 'กำลังบันทึก...';
 
-        alert(`บันทึกด่าน "${levelName}" เรียบร้อยแล้ว!`);
-        
-        // Reset and go to level selection screen
-        customVocabularyList = [];
-        customLevelNameInput.value = '';
-        renderCustomList();
-        populateLevels(); // Refresh the level list
-        showScreen('level-screen');
+        try {
+            const userLevelsRef = db.collection('users').doc(currentUser.uid).collection('customLevels');
+
+            if (editingLevelId) {
+                // Update existing level
+                await userLevelsRef.doc(editingLevelId).update(levelData);
+                alert(`อัปเดตด่าน "${levelName}" เรียบร้อยแล้ว!`);
+            } else {
+                // Add new level (and include createdAt)
+                levelData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                await userLevelsRef.add(levelData);
+                alert(`บันทึกด่าน "${levelName}" เรียบร้อยแล้ว!`);
+            }
+            
+            editingLevelId = null; // Reset editing state
+            
+            showScreen('my-levels-screen');
+            loadAndDisplayMyLevels(); // Refresh the list
+
+        } catch (error) {
+            console.error("Error saving level: ", error);
+            alert("เกิดข้อผิดพลาดในการบันทึกด่าน กรุณาลองใหม่อีกครั้ง");
+        } finally {
+            saveCustomLevelBtn.disabled = false;
+            saveCustomLevelBtn.textContent = saveBtnOriginalText;
+        }
+    }
+
+    async function loadAndDisplayMyLevels() {
+        if (!currentUser) {
+            myLevelsContainer.innerHTML = '<p>Please log in to see your levels.</p>';
+            return;
+        }
+
+        myLevelsContainer.innerHTML = '<p style="text-align: center; margin-top: 2rem;">Loading your levels...</p>';
+
+        try {
+            const snapshot = await db.collection('users').doc(currentUser.uid).collection('customLevels').orderBy('createdAt', 'desc').get();
+            
+            if (snapshot.empty) {
+                myLevelsContainer.innerHTML = '<p style="text-align: center; margin-top: 2rem;">You haven\'t created any custom levels yet. Click "Create New Level" to start!</p>';
+                return;
+            }
+
+            myLevelsContainer.innerHTML = ''; // Clear loading message
+            snapshot.forEach(doc => {
+                const level = doc.data();
+                const levelId = doc.id;
+
+                const levelEl = document.createElement('div');
+                levelEl.className = 'my-level-item';
+                levelEl.dataset.id = levelId;
+                // Store vocab in a data attribute to retrieve easily for 'play' and 'edit'
+                levelEl.dataset.vocab = JSON.stringify(level.vocab); 
+
+                levelEl.innerHTML = `
+                    <span class="my-level-item-name">${level.name}</span>
+                    <div class="my-level-item-actions">
+                        <button class="btn play-level-btn">Play</button>
+                        <button class="btn btn-secondary edit-level-btn">Edit</button>
+                        <button class="btn btn-danger delete-level-btn">Delete</button>
+                    </div>
+                `;
+                myLevelsContainer.appendChild(levelEl);
+            });
+
+        } catch (error) {
+            console.error("Error loading custom levels: ", error);
+            myLevelsContainer.innerHTML = '<p>There was an error loading your levels.</p>';
+        }
     }
 
     // --- Event Listeners ---
+    myLevelsContainer.addEventListener('click', e => {
+        const target = e.target;
+        const levelItem = target.closest('.my-level-item');
+        if (!levelItem) return;
+
+        const levelId = levelItem.dataset.id;
+        
+        if (target.classList.contains('play-level-btn')) {
+            const levelName = levelItem.querySelector('.my-level-item-name').textContent;
+            const vocab = JSON.parse(levelItem.dataset.vocab);
+            startQuiz(vocab, levelName);
+        } else if (target.classList.contains('edit-level-btn')) {
+            const levelName = levelItem.querySelector('.my-level-item-name').textContent;
+            const vocab = JSON.parse(levelItem.dataset.vocab);
+            
+            // Set state for editing
+            editingLevelId = levelId;
+            customLevelNameInput.value = levelName;
+            customVocabularyList = vocab;
+
+            // Show and populate the creation screen
+            renderCustomList();
+            showScreen('custom-screen');
+        } else if (target.classList.contains('delete-level-btn')) {
+            const levelName = levelItem.querySelector('.my-level-item-name').textContent;
+            if (confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบด่าน "${levelName}"? การกระทำนี้ไม่สามารถย้อนกลับได้`)) {
+                deleteCustomLevel(levelId);
+            }
+        }
+    });
+
+    async function deleteCustomLevel(levelId) {
+        if (!currentUser) return;
+        try {
+            await db.collection('users').doc(currentUser.uid).collection('customLevels').doc(levelId).delete();
+            // Refresh the list to show the level has been removed
+            await loadAndDisplayMyLevels(); 
+        } catch (error) {
+            console.error("Error deleting level: ", error);
+            alert("There was an error deleting the level. Please try again.");
+        }
+    }
+
     levelModeBtn.addEventListener('click', () => showScreen('level-screen'));
     customModeBtn.addEventListener('click', () => {
+        // This is the new entry point for all custom level activities
+        showScreen('my-levels-screen');
+        loadAndDisplayMyLevels();
+    });
+    goToCreateLevelBtn.addEventListener('click', () => {
+        // Clear form for new level creation
+        editingLevelId = null; // Clear editing state
         customVocabularyList = [];
+        customLevelNameInput.value = '';
         renderCustomList();
         showScreen('custom-screen');
     });
-    historyBtn.addEventListener('click', showHistoryModal);
 
+    historyBtn.addEventListener('click', showHistoryModal);
     addWordBtn.addEventListener('click', translateAndAddWord);
     customListContainer.addEventListener('click', handleRemoveWord);
-    customWordInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            translateAndAddWord();
-        }
-    });
+    customWordInput.addEventListener('keydown', (e) => e.key === 'Enter' && translateAndAddWord());
     customLevelNameInput.addEventListener('input', updateSaveButtonState);
     saveCustomLevelBtn.addEventListener('click', saveCustomLevel);
 
+    // Auth Listeners
+    signupBtn.addEventListener('click', async () => {
+        clearAuthError();
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const { error } = await signUpWithEmail(email, password);
+        if (error) showAuthError(error);
+    });
 
+    loginBtn.addEventListener('click', async () => {
+        clearAuthError();
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const { error } = await loginWithEmail(email, password);
+        if (error) showAuthError(error);
+    });
+    
+    googleLoginBtn.addEventListener('click', async () => {
+        clearAuthError();
+        const { error } = await loginWithGoogle();
+        if (error) showAuthError(error);
+    });
+
+    logoutBtn.addEventListener('click', () => logoutUser());
+
+    // Quiz Navigation Listeners
     nextQuestionBtn.addEventListener('click', () => {
         currentQuestionIndex++;
         displayQuestion();
     });
 
-    backBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-             if (!btn.closest('#mode-screen')) { showScreen('mode-screen'); }
-        });
-    });
-
+    backBtns.forEach(btn => btn.addEventListener('click', () => !btn.closest('#mode-screen') && showScreen('mode-screen')));
+    
     const historyBackBtn = historyScreen.querySelector('.back-btn-modal');
-    if(historyBackBtn) {
-        historyBackBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            hideHistoryModal();
-        });
-    }
+    if(historyBackBtn) historyBackBtn.addEventListener('click', (e) => { e.stopPropagation(); hideHistoryModal(); });
 
     restartBtn.addEventListener('click', () => {
         resetQuizState();
@@ -391,7 +585,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     backToHomeBtn.addEventListener('click', saveAndExit);
-
     clearHistoryBtn.addEventListener('click', () => {
         if (confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างประวัติทั้งหมด? การกระทำนี้ไม่สามารถย้อนกลับได้')) {
             localStorage.removeItem('quizHistory');
@@ -400,14 +593,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Initial Setup ---
-    populateLevels();
-    const modeScreen = document.getElementById('mode-screen');
-    screens.forEach(s => {
-        s.classList.remove('active', 'exiting');
-        s.style.transition = 'none';
+    onAuthStateChanged(user => {
+        if (user) {
+            handleLoggedIn(user);
+        } else {
+            handleLoggedOut();
+        }
     });
-    modeScreen.classList.add('active');
-    setTimeout(() => {
-        screens.forEach(s => { s.style.transition = ''; });
-    }, 10);
 });
