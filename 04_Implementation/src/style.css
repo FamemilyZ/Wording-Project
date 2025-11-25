@@ -224,6 +224,7 @@ body.logged-in #login-screen {
     text-align: center;
     justify-content: center;
     padding: 2rem;
+    transition: background-color 0.2s ease-in-out;
     /* animation: fadeIn 0.5s; */ /* Will be controlled by JS */
 }
 
@@ -397,7 +398,44 @@ textarea#vocab-input:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
 }
-.custom-screen-controls { display: flex; gap: 1rem; justify-content: center; align-items: center; flex-wrap: wrap; }
+
+/* --- New Custom Screen Layout --- */
+.custom-screen-layout {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+    flex-grow: 1;
+    padding: 1rem 0;
+}
+
+.custom-layout-left, .custom-layout-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-layout-right {
+    justify-content: flex-start; /* Align items to the top */
+}
+
+.custom-screen-controls { 
+    display: flex; 
+    gap: 1rem; 
+    justify-content: flex-end; /* Align buttons to the right */
+    margin-top: auto; /* Push to the bottom of the right column */
+    width: 100%;
+}
+
+#custom-screen h3 {
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
 
 /* --- Quiz Screen --- */
 .quiz-header {
@@ -434,7 +472,19 @@ textarea#vocab-input:focus {
         display: flex;
         flex-direction: column;
         justify-content: center;
-    }.question-word {
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+    }
+    
+.correct-flash {
+    background-color: rgba(16, 185, 129, 0.2);
+}
+
+.incorrect-flash {
+    background-color: rgba(239, 68, 68, 0.2);
+}
+    
+    .question-word {
     font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: bold;
     margin: 0 0 1.5rem 0;
@@ -466,7 +516,7 @@ textarea#vocab-input:focus {
 
 .quiz-controls {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 1rem;
     margin-top: auto;
     padding-top: 1rem;
@@ -597,6 +647,10 @@ textarea#vocab-input:focus {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+#custom-level-name-input {
+    flex-grow: 0;
+}
+
 #custom-vocab-form input[type="text"]:focus,
 #custom-level-name-input:focus {
     outline: none;
@@ -705,7 +759,59 @@ textarea#vocab-input:focus {
 }
 
 .my-level-item-actions .btn {
+
     padding: 8px 12px;
+
     margin: 0;
+
     font-size: 0.9rem;
+
 }
+
+
+
+/* --- Quiz Options Screen --- */
+
+.quiz-options-container {
+
+    background-color: var(--background-color);
+
+    padding: 2rem;
+
+    border-radius: var(--border-radius);
+
+    border: 1px solid #333;
+
+    width: 100%;
+
+    max-width: 500px;
+
+    text-align: center;
+
+}
+
+
+
+.quiz-options-container h3 {
+
+    margin-top: 0;
+
+    color: var(--primary-color);
+
+}
+
+
+
+.quiz-options-container p {
+
+    color: var(--secondary-color);
+
+    margin-bottom: 1.5rem;
+
+}
+
+
+
+/* --- New Custom Screen Layout --- */
+
+

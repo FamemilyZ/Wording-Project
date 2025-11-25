@@ -32,6 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const customLevelNameInput = document.getElementById('custom-level-name-input');
     const goToCreateLevelBtn = document.getElementById('go-to-create-level-btn');
     const myLevelsContainer = document.getElementById('my-levels-container');
+    const backToMyLevelsBtn = document.getElementById('back-to-my-levels-btn');
+
+    // Quiz Options Elements
+    const quizOptionsTitle = document.getElementById('quiz-options-title');
+    const totalWordsCount = document.getElementById('total-words-count');
+    const numQuestionsInput = document.getElementById('num-questions-input');
+    const allWordsBtn = document.getElementById('all-words-btn');
+    const startQuizFromOptionsBtn = document.getElementById('start-quiz-from-options-btn');
+    const backFromOptionsBtn = document.getElementById('back-from-options-btn');
 
     // Quiz Screen Elements
     const questionTitle = document.getElementById('question-title');
@@ -62,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let answeredQuestions = [];
     let customVocabularyList = [];
     let editingLevelId = null;
+    let pendingQuizData = null;
 
     // --- Auth UI Functions ---
     function handleLoggedIn(user) {
@@ -163,14 +173,23 @@ document.addEventListener('DOMContentLoaded', () => {
         historyScreen.classList.remove('active');
     }
 
-    function startQuiz(vocabList, mode) {
+    function initializeAndStartQuiz(vocabList, mode, numQuestions) {
         if (vocabList.length < 4) {
             alert('Please provide at least 4 vocabulary words to start the quiz.');
+            // Go back to the options screen if there's an issue
+            showScreen('quiz-options-screen'); 
             return;
         }
         vocabulary = vocabList;
-        const shuffled = [...vocabulary].sort(() => 0.5 - Math.random());
-        currentQuestions = mode === 'Custom' ? shuffled : shuffled.slice(0, 30);
+        let shuffled = [...vocabulary].sort(() => 0.5 - Math.random());
+
+        // Slice the questions based on user's choice
+        let num = parseInt(numQuestions, 10);
+        if (num && num > 0 && num <= shuffled.length) {
+            currentQuestions = shuffled.slice(0, num);
+        } else {
+            currentQuestions = shuffled; // All words
+        }
         
         currentQuestionIndex = 0;
         score = 0;
@@ -224,6 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const choiceButtons = choicesContainer.querySelectorAll('.btn');
         choiceButtons.forEach(btn => btn.disabled = true);
 
+        const quizScreen = document.getElementById('quiz-screen');
+
         const isCorrect = selectedChoice === correctChoice;
         if (isCorrect) {
             score++;
@@ -231,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
             feedback.className = 'feedback correct';
             button.style.backgroundColor = 'var(--success-color)';
             button.style.borderColor = 'var(--success-color)';
+            if (quizScreen) quizScreen.classList.add('correct-flash');
         } else {
             feedback.textContent = 'คำตอบผิด!';
             feedback.className = 'feedback incorrect';
@@ -242,6 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     btn.style.borderColor = 'var(--success-color)';
                 }
             });
+            if (quizScreen) quizScreen.classList.add('incorrect-flash');
         }
         
         answeredQuestions.push({
@@ -252,6 +275,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         nextQuestionBtn.style.display = 'flex';
+
+        setTimeout(() => {
+            if (quizScreen) {
+                quizScreen.classList.remove('correct-flash', 'incorrect-flash');
+            }
+        }, 500);
     }
 
     function showResults() {
@@ -316,7 +345,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const button = document.createElement('button');
             button.className = 'btn';
             button.textContent = levelData.name;
-            button.addEventListener('click', () => { startQuiz(levelData.vocab, levelData.name); });
+            button.addEventListener('click', () => { 
+                pendingQuizData = { vocab: levelData.vocab, name: levelData.name };
+                quizOptionsTitle.textContent = `Level: ${levelData.name}`;
+                totalWordsCount.textContent = levelData.vocab.length;
+                numQuestionsInput.max = levelData.vocab.length;
+                numQuestionsInput.value = '';
+                showScreen('quiz-options-screen');
+            });
             levelButtonsContainer.appendChild(button);
         });
     }
@@ -488,7 +524,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (target.classList.contains('play-level-btn')) {
             const levelName = levelItem.querySelector('.my-level-item-name').textContent;
             const vocab = JSON.parse(levelItem.dataset.vocab);
-            startQuiz(vocab, levelName);
+            
+            pendingQuizData = { vocab: vocab, name: levelName };
+            quizOptionsTitle.textContent = `Level: ${levelName}`;
+            totalWordsCount.textContent = vocab.length;
+            numQuestionsInput.max = vocab.length;
+            numQuestionsInput.value = '';
+            showScreen('quiz-options-screen');
         } else if (target.classList.contains('edit-level-btn')) {
             const levelName = levelItem.querySelector('.my-level-item-name').textContent;
             const vocab = JSON.parse(levelItem.dataset.vocab);
@@ -542,6 +584,31 @@ document.addEventListener('DOMContentLoaded', () => {
     customWordInput.addEventListener('keydown', (e) => e.key === 'Enter' && translateAndAddWord());
     customLevelNameInput.addEventListener('input', updateSaveButtonState);
     saveCustomLevelBtn.addEventListener('click', saveCustomLevel);
+    backToMyLevelsBtn.addEventListener('click', () => showScreen('my-levels-screen'));
+
+    // Quiz Options Listeners
+    allWordsBtn.addEventListener('click', () => {
+        if (pendingQuizData) {
+            numQuestionsInput.value = pendingQuizData.vocab.length;
+        }
+    });
+
+    startQuizFromOptionsBtn.addEventListener('click', () => {
+        if (pendingQuizData) {
+            const num = numQuestionsInput.value;
+            // Validate the number of questions
+            if (num && (num < 4 || num > pendingQuizData.vocab.length)) {
+                alert(`Please enter a number between 4 and ${pendingQuizData.vocab.length}.`);
+                return;
+            }
+            initializeAndStartQuiz(pendingQuizData.vocab, pendingQuizData.name, num);
+        }
+    });
+
+    backFromOptionsBtn.addEventListener('click', () => {
+        // For simplicity, always return to the main mode selection
+        showScreen('mode-screen');
+    });
 
     // Auth Listeners
     signupBtn.addEventListener('click', async () => {

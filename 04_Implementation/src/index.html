@@ -77,20 +77,28 @@
         <!-- Custom Input Screen -->
         <div id="custom-screen" class="screen">
             <h2>Build Your Custom Quiz</h2>
-            <div id="custom-vocab-form">
-                <div class="form-row">
-                    <input type="text" id="custom-word-input" placeholder="Enter an English or Thai word">
+            <div class="custom-screen-layout">
+                <div class="custom-layout-left">
+                    <h3>Vocabulary List</h3>
+                    <div id="custom-vocab-form">
+                        <div class="form-row">
+                            <input type="text" id="custom-word-input" placeholder="Enter an English or Thai word">
+                        </div>
+                        <button id="add-word-btn" class="btn">Translate and Add</button>
+                    </div>
+                    <div id="custom-list-container">
+                        <p id="custom-list-placeholder">Your words will appear here. Add at least 4 to start.</p>
+                        <!-- Dynamically added words will go here -->
+                    </div>
                 </div>
-                <button id="add-word-btn" class="btn">Translate and Add</button>
-            </div>
-            <div id="custom-list-container">
-                <p id="custom-list-placeholder">Your words will appear here. Add at least 4 to start.</p>
-                <!-- Dynamically added words will go here -->
-            </div>
-            <div class="custom-screen-controls">
-                <input type="text" id="custom-level-name-input" placeholder="ตั้งชื่อด่านของคุณ (เช่น คำศัพท์หมวดผลไม้)">
-                <button id="save-custom-level-btn" class="btn" disabled>บันทึกด่าน</button>
-                <button class="btn btn-secondary back-btn">Back to Modes</button>
+                <div class="custom-layout-right">
+                    <h3>Level Details</h3>
+                    <input type="text" id="custom-level-name-input" placeholder="ตั้งชื่อด่านของคุณ (เช่น คำศัพท์หมวดผลไม้)">
+                    <div class="custom-screen-controls">
+                        <button id="save-custom-level-btn" class="btn" disabled>บันทึกด่าน</button>
+<button id="back-to-my-levels-btn" class="btn btn-secondary">Back to My Levels</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -103,7 +111,24 @@
             <div id="my-levels-container">
                 <!-- Custom levels will be generated here -->
             </div>
-            <button class="btn btn-secondary back-btn">Back to Modes</button>
+            <button class="btn btn-secondary back-btn">Back to Menu</button>
+        </div>
+
+        <!-- Quiz Options Screen -->
+        <div id="quiz-options-screen" class="screen">
+            <h2 id="quiz-options-title">Level: </h2>
+            <div class="quiz-options-container">
+                <h3>Number of Questions</h3>
+                <p>This level has <span id="total-words-count">N/A</span> words.</p>
+                <div class="form-group">
+                    <input type="number" id="num-questions-input" class="form-input" min="4" placeholder="Enter number (e.g., 10)">
+                </div>
+                <div class="button-group">
+                    <button id="all-words-btn" class="btn btn-secondary">All Words</button>
+                    <button id="start-quiz-from-options-btn" class="btn btn-primary">Start Quiz</button>
+                </div>
+            </div>
+            <button id="back-from-options-btn" class="btn btn-secondary">Back</button>
         </div>
 
         <!-- Quiz Screen -->
@@ -125,7 +150,7 @@
             <p id="feedback" class="feedback"></p>
             <div class="quiz-controls">
                 <button id="next-question-btn" class="btn">Next</button>
-                <button id="back-to-home-btn" class="btn btn-secondary">Back to Modes</button>
+                <button id="back-to-home-btn" class="btn btn-secondary">Back to Menu</button>
             </div>
         </div>
 
