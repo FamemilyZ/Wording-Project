@@ -1,4 +1,4 @@
-# Vocabulary Quiz Generator
+# Wording
 
 A web-based application for generating vocabulary quizzes, created for a university Software Engineering course project. Users can test their knowledge using pre-defined vocabulary levels or by providing their own custom word lists.
 

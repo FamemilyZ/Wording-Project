@@ -1,6 +1,6 @@
-# User Manual for Vocabulary Quiz Generator
+# User Manual for Wording
 
-Welcome to the **Vocabulary Quiz Generator**! This guide will walk you through how to use this modern, animated application to test and improve your vocabulary skills.
+Welcome to the **Wording**! This guide will walk you through how to use this modern, animated application to test and improve your vocabulary skills.
 
 ## 1. Getting Started
 

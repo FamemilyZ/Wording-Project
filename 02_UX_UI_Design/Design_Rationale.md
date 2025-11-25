@@ -1,6 +1,6 @@
-# Design Rationale for Vocabulary Quiz Generator
+# Design Rationale for Wording
 
-This document outlines the design philosophy and key decisions made during the UI/UX overhaul of the Vocabulary Quiz Generator.
+This document outlines the design philosophy and key decisions made during the UI/UX overhaul of the Wording.
 
 ## 1. Core Goal
 
