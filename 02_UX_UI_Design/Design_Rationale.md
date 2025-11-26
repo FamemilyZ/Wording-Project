@@ -1,45 +1,32 @@
-# Design Rationale for Wording
+# เอกสารอธิบายเหตุผลในการออกแบบ (Design Rationale)
 
-This document outlines the design philosophy and key decisions made during the UI/UX overhaul of the Wording.
+เอกสารนี้อธิบายแนวคิดและเหตุผลเบื้องหลังการออกแบบ UX/UI สำหรับแอปพลิเคชัน Vocabulary Quiz Generator
 
-## 1. Core Goal
+## 1. ภาพรวมและเป้าหมาย
 
-The primary objective was to elevate the application from a basic prototype to a polished, modern, and engaging user experience. The focus was on creating an interface that is not only functional but also visually appealing and intuitive to use, encouraging repeated engagement from the user.
+เป้าหมายหลักของการออกแบบคือการสร้างประสบการณ์ที่ **น่าใช้งาน (Engaging)**, **เข้าใจง่าย (Intuitive)**, และ **ส่งเสริมการเรียนรู้ (Supportive of Learning)** สำหรับผู้ใช้ทุกระดับ
 
-## 2. Theme and Color Palette
+## 2. การเลือกใช้ Layout และ Flow
 
-A **dark theme** was chosen as the foundation for the redesign.
+- **Single-Page Application (SPA) Flow**: เลือกใช้การเปลี่ยนหน้าจอแบบ SPA (ซ่อน/แสดง div) เพื่อให้การใช้งานต่อเนื่องและรวดเร็ว ไม่มีการโหลดหน้าเพจใหม่ทั้งหมด
+- **Card-Based Layout**: การออกแบบหน้าจอเลือกด่าน (Level Selection) และหน้าจอหลัก (Mode Selection) เป็นแบบการ์ด (Card) ช่วยให้ข้อมูลดูเป็นระเบียบ, คลิกง่าย, และรองรับการแสดงผลบนอุปกรณ์พกพาได้ดี
+- **Progressive Disclosure**: ในหน้าทำแบบทดสอบ จะแสดงเฉพาะข้อมูลที่จำเป็น (คำถาม, ตัวเลือก) และจะแสดงปุ่ม "Next" กับผลตอบรับ (Feedback) หลังจากผู้ใช้ตอบคำถามแล้วเท่านั้น เพื่อให้ผู้ใช้มีสมาธิกับคำถามปัจจุบัน
 
-*   **Rationale**: Dark themes are contemporary, reduce eye strain in various lighting conditions, and allow colorful interactive elements to stand out, creating a high-impact visual experience.
-*   **Color Choices**:
-    *   **Background (`#111827` - Dark Blue-Gray)**: Provides a deep, clean, and professional backdrop that is less stark than pure black.
-    *   **Surface (`#1f2937` - Lighter Blue-Gray)**: Used for containers and modals, this color creates a subtle layering effect and visual hierarchy against the darker background.
-    *   **Primary (`#4f46e5` - Indigo)**: A vibrant, energetic purple-blue that serves as the main accent color. It is used for buttons, the progress bar, and highlights to draw the user's attention to key interactive elements.
-    *   **Feedback Colors (`#10b981` Emerald Green & `#ef4444` Bright Red)**: These are universally recognized, high-contrast colors chosen for immediate and unambiguous user feedback (Correct/Incorrect).
+## 3. การเลือกใช้สี (Color Palette)
 
-## 3. Layout and User Interface (UI)
+- **สีหลัก (Primary Color - `var(--primary-color)`)**: สีน้ำเงินเข้ม ใช้สำหรับส่วนหัว, ปุ่มหลัก, และข้อความสำคัญ เพื่อสร้างความรู้สึกน่าเชื่อถือและเป็นทางการ
+- **สีพื้นหลัง (Background Color - `var(--bg-color)`)**: สีเทาอ่อน ช่วยให้สบายตาและขับให้เนื้อหาหลักโดดเด่นขึ้น
+- **สีสำหรับความสำเร็จ (Success Color - `var(--success-color)`)**: สีเขียว ใช้แสดงผลเมื่อผู้ใช้ตอบถูก ทำให้เกิดความรู้สึกเชิงบวกและเป็นกำลังใจ
+- **สีสำหรับข้อผิดพลาด (Error Color - `var(--error-color)`)**: สีแดง ใช้แสดงผลเมื่อผู้ใช้ตอบผิด ซึ่งเป็นสีสากลที่สื่อถึงการแจ้งเตือนหรือข้อผิดพลาด
 
-*   **Single Page Application (SPA) Experience**: The application is designed to feel like a native app. Screens slide in and out horizontally, preventing jarring page reloads and creating a seamless navigational flow.
-*   **Quiz Screen Structure**: This is the most critical screen.
-    *   **Side-by-Side Layout**: On wider screens (desktops, tablets), the layout is split between the image container and the question/choices container. This makes efficient use of space and allows visual learners to associate the word with an image simultaneously.
-    *   **Responsive Stacking**: On smaller mobile screens, the layout automatically stacks vertically to ensure readability and comfortable tapping of choices.
-    *   **Progress Bar**: A progress bar was added at the top to give users a constant, clear sense of their progress through the quiz, which helps manage their expectations and motivation.
-*   **Clear Visual Hierarchy**: The use of varied font sizes, bold weights, and color accents guides the user's focus. The vocabulary word is the most prominent element on the quiz screen, followed by the answer choices.
+## 4. การใช้ Animation และ Micro-interactions
 
-## 4. Animation and Interactivity
+- **Screen Transitions**: ใช้ Slide Animation ในการเปลี่ยนหน้าจอหลัก เพื่อสร้างความรู้สึกที่ลื่นไหลและมีชีวิตชีวา
+- **Button Hover Effects**: เพิ่มเอฟเฟกต์เมื่อนำเมาส์ไปวางบนปุ่ม เพื่อให้ผู้ใช้รับรู้ว่าองค์ประกอบนั้นสามารถโต้ตอบได้
+- **Feedback Animation**: เมื่อแสดงผลตอบรับ (Correct/Incorrect) จะมี Animation เล็กน้อยปรากฏขึ้น เพื่อดึงดูดความสนใจและทำให้การเรียนรู้ไม่น่าเบื่อ
 
-Animation is used purposefully to enhance the user experience, not distract from it.
+## 5. การออกแบบเพื่อส่งเสริมการเรียนรู้
 
-*   **Screen Transitions**: The cubic-bezier sliding animation for screen transitions is smooth and directional, giving the user a mental map of where they are in the application.
-*   **Button Feedback**: Buttons provide satisfying visual feedback by slightly lifting (`translateY`) and gaining a larger shadow on hover. This makes the interface feel more responsive and "alive."
-*   **Feedback Pop**: The "Correct" and "Incorrect" messages use a subtle "pop" animation to draw the user's eye and confirm that their action has been registered and graded.
-
-## 5. Image Generation Placeholder
-
-A key user request was to include images to aid learning.
-
-*   **Functional Placeholder**: While true AI image generation is beyond the scope of a client-side application, a functional placeholder was implemented using the `via.placeholder.com` service.
-*   **Rationale**: This approach serves three key purposes:
-    1.  It fulfills the user's request for visual aids.
-    2.  It maintains the integrity and visual completeness of the UI design.
-    3.  It provides a clear, working example of how a real image API could be integrated in the future without requiring complex API keys or a backend. The word itself is dynamically embedded in the placeholder, simulating a "generated" image.
+- **Visual Association**: ในหน้าทำแบบทดสอบมีการเพิ่มรูปภาพที่เกี่ยวข้องกับคำศัพท์ เพื่อช่วยให้ผู้ใช้สร้างการเชื่อมโยงระหว่างคำศัพท์และความหมายผ่านภาพ ซึ่งเป็นเทคนิคช่วยจำที่มีประสิทธิภาพ
+- **Immediate Feedback**: การแสดงผลว่าตอบถูกหรือผิดทันที ช่วยให้ผู้ใช้เรียนรู้จากข้อผิดพลาดและจดจำคำตอบที่ถูกต้องได้ในทันที
+- **History Tracking**: การบันทึกและแสดงประวัติคะแนน ช่วยให้ผู้ใช้เห็นพัฒนาการของตนเองและเป็นแรงจูงใจในการกลับมาใช้งานอีกครั้ง

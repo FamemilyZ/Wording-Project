@@ -1,0 +1,2 @@
+กรุณาใส่ลิงก์สำหรับเข้าใช้งานระบบที่ Deploy แล้วที่นี่
+(เช่น: https://your-project-url.firebaseapp.com)
