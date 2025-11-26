@@ -1,5 +1,7 @@
 # โครงการ Wording
 
+**✨ Live Demo: [https://wording-f2155.web.app](https://wording-f2155.web.app)**
+
 [![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://forthebadge.com)
 
 Wording เป็นเว็บแอปพลิเคชันสำหรับฝึกฝนคำศัพท์ภาษาอังกฤษผ่านเกมทายคำศัพท์ตามระดับความยากง่าย มีระบบสมาชิกสำหรับบันทึกคะแนนและความคืบหน้าของผู้ใช้
