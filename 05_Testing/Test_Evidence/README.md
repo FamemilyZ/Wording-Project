@@ -1,3 +1,14 @@
-This folder is used to store screenshots or video recordings
-that serve as evidence for the test cases listed in the Test_Case_Report.md file.
-Each file should be named according to its Test Case ID (e.g., TC01_Pass.png).
+# README: Test Evidence
+
+## สิ่งที่ต้องมีในโฟลเดอร์นี้
+กรุณาเพิ่มไฟล์หลักฐานการทดสอบของคุณในโฟลเดอร์นี้ เพื่อยืนยันผลลัพธ์ของแต่ละ Test Case ที่ระบุไว้ใน `Test_Case_Report.md`
+
+## ประเภทไฟล์ที่แนะนำ
+- **ภาพหน้าจอ (Screenshot):**
+  - ภาพของขั้นตอนการทดสอบแต่ละขั้นตอน
+  - ภาพของผลลัพธ์ที่แสดงบนหน้าจอ (เช่น ข้อความ Error, หน้าจอผลคะแนน)
+  - ตั้งชื่อไฟล์ให้สอดคล้องกับ Test Case ID (เช่น `TC-01_Success.png`, `TC-02_Error.png`)
+- **วิดีโอสั้นๆ (.mp4):**
+  - บันทึกหน้าจอขณะทำการทดสอบฟังก์ชันที่ซับซ้อน
+
+**หมายเหตุ:** Gemini ไม่สามารถสร้างไฟล์รูปภาพหรือวิดีโอเหล่านี้ได้ นักศึกษาจะต้องเป็นผู้จัดทำในส่วนนี้เอง

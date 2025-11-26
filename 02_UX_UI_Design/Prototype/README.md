@@ -1,3 +1,11 @@
-This folder contains prototype images and mockups for the application.
+# README: Prototype
 
-The images generated in the previous step should be placed here.
+## สิ่งที่ต้องมีในโฟลเดอร์นี้
+กรุณาเพิ่มไฟล์ Prototype ของคุณในโฟลเดอร์นี้ เพื่อแสดงภาพจำลองการทำงานของหน้าจอและขั้นตอนการทำงานที่สำคัญ
+
+## ประเภทไฟล์ที่แนะนำ
+- ไฟล์รูปภาพ Mockup (.png, .jpg)
+- ไฟล์เอกสาร (.pdf) ที่รวมภาพหน้าจอต่างๆ
+- ลิงก์ไปยัง Prototype แบบ Interactive (เช่น Figma, Balsamiq) สามารถใส่ไว้ในไฟล์นี้ได้
+
+**หมายเหตุ:** Gemini ไม่สามารถสร้างไฟล์รูปภาพหรือไฟล์ดีไซน์เหล่านี้ได้ นักศึกษาจะต้องเป็นผู้จัดทำในส่วนนี้เอง
