@@ -1,44 +1,111 @@
-# Wording
+# โครงการ Wording
 
-A web-based application for generating vocabulary quizzes, created for a university Software Engineering course project. Users can test their knowledge using pre-defined vocabulary levels or by providing their own custom word lists.
+[![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://forthebadge.com)
 
-## Features
+Wording เป็นเว็บแอปพลิเคชันสำหรับฝึกฝนคำศัพท์ภาษาอังกฤษผ่านเกมทายคำศัพท์ตามระดับความยากง่าย มีระบบสมาชิกสำหรับบันทึกคะแนนและความคืบหน้าของผู้ใช้
 
-- **Two Quiz Modes:**
-    - **Level Mode:** Choose from 12 pre-defined vocabulary levels of increasing difficulty.
-    - **Custom Mode:** Input your own vocabulary list (in `word:definition` format) to generate a personalized quiz.
-- **Multiple Choice Questions:** Each question is presented with four randomized choices.
-- **Instant Feedback:** See immediately if your answer was correct or incorrect.
-- **Score Tracking:** View your total score at the end of each quiz.
-- **Local History:** Your quiz history (mode, score, date) is saved automatically in your browser's Local Storage for you to track your progress.
+---
 
-## How to Run
+## 📂 โครงสร้างโฟลเดอร์
 
-This is a simple client-side web application built with HTML, CSS, and vanilla JavaScript. No installation or build process is required.
+โครงการนี้จัดเก็บเอกสารและโค้ดทั้งหมดตามขั้นตอนการพัฒนาซอฟต์แวร์ (SDLC) ทั้ง 6 ขั้นตอน โดยแบ่งเป็นโฟลเดอร์ตั้งแต่ `01_Requirements` ถึง `06_Deployment_Review` เพื่อให้ง่ายต่อการติดตามและตรวจสอบ
 
-1.  Clone this repository to your local machine.
-2.  Navigate to the `04_Implementation/src/` directory.
-3.  Open the `index.html` file in your web browser.
+- **ซอร์สโค้ดหลัก (Source Code)**: อยู่ในโฟลเดอร์ `04_Implementation/src/`
+- **เอกสารประกอบ**: อยู่ในโฟลเดอร์ตามแต่ละขั้นตอนของ SDLC
 
-That's it! The application should now be running.
+---
 
-## Project Structure
+## 🛠️ เทคโนโลยีที่ใช้ (Technology Stack)
 
-The repository is organized into folders corresponding to the Software Development Life Cycle (SDLC) phases.
+- **Frontend**: HTML5, CSS3, JavaScript (ES6)
+- **Backend & Hosting**: Firebase (Authentication, Firestore, Hosting)
 
-```
-Vocabulary-Quiz-Generator/
-├── 01_Requirements/      # Project scope and user stories
-├── 02_UX_UI_Design/      # Design rationale and prototypes
-├── 03_System_Design/     # Technology stack and architecture
-├── 04_Implementation/    # Source code for the application
-│   └── src/
-│       ├── index.html    # Main HTML file
-│       ├── style.css     # Stylesheet
-│       ├── levels.js     # Pre-defined vocabulary data
-│       └── script.js     # Application logic
-├── 05_Testing/           # Test cases and evidence
-├── 06_Deployment_Review/ # User manual and final review documents
-├── .gitignore
-└── README.md             # This file
-```
+---
+
+## ⚙️ การติดตั้งและตั้งค่า (Installation & Setup)
+
+1.  **Clone a repository มาที่เครื่องของคุณ:**
+    ```bash
+    git clone <your-repository-url>
+    cd Wording
+    ```
+
+2.  **ตั้งค่า Firebase:**
+    โปรเจกต์นี้ต้องใช้ Firebase สำหรับการยืนยันตัวตนและจัดเก็บข้อมูล คุณจำเป็นต้องสร้างโปรเจกต์บน Firebase ของคุณเองก่อน
+    - ไปที่ [Firebase Console](https://console.firebase.google.com/) และสร้างโปรเจกต์ใหม่
+    - ในหน้าตั้งค่าโปรเจกต์ (Project Settings) ให้สร้าง "เว็บแอป" (Web App) ใหม่
+    - คัดลอกอ็อบเจกต์ `firebaseConfig` ที่ได้มา
+
+3.  **นำค่า `firebaseConfig` ไปใส่ในโค้ด:**
+    - เปิดไฟล์ `04_Implementation/src/auth.js`
+    - มองหาส่วนที่เขียนว่า `// PASTE YOUR FIREBASE CONFIG HERE` แล้วนำค่าที่คัดลอกมาไปวางแทนที่
+    ```javascript
+    // auth.js
+
+    // ... (โค้ดอื่นๆ)
+
+    // PASTE YOUR FIREBASE CONFIG HERE
+    const firebaseConfig = {
+      apiKey: "AIza...",
+      authDomain: "your-project-id.firebaseapp.com",
+      projectId: "your-project-id",
+      storageBucket: "your-project-id.appspot.com",
+      messagingSenderId: "...",
+      appId: "1:..."
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // ... (โค้ดอื่นๆ)
+    ```
+
+---
+
+## 🚀 วิธีการรันโปรเจกต์ (How to Run)
+
+### วิธีที่ 1: รันผ่าน Local Web Server (แนะนำ)
+วิธีนี้จะจำลองสภาพแวดล้อมที่ใกล้เคียงกับการใช้งานจริงมากที่สุด
+
+1.  **ติดตั้ง `http-server` (หากยังไม่มี):**
+    ```bash
+    npm install -g http-server
+    ```
+
+2.  **เข้าไปยังโฟลเดอร์ `src`:**
+    ```bash
+    cd 04_Implementation/src
+    ```
+
+3.  **รันเซิร์ฟเวอร์:**
+    ```bash
+    http-server
+    ```
+
+4.  เปิดเว็บเบราว์เซอร์แล้วไปที่ [http://localhost:8080](http://localhost:8080)
+
+### วิธีที่ 2: เปิดไฟล์ `index.html` โดยตรง
+คุณสามารถเปิดไฟล์ `04_Implementation/src/index.html` ด้วยเว็บเบราว์เซอร์ได้เลย
+**ข้อควรระวัง:** วิธีนี้อาจทำให้เกิดปัญหาด้านความปลอดภัย (CORS) เมื่อเรียกใช้งานฟังก์ชันของ Firebase ทำให้บางส่วนของแอปอาจทำงานไม่ถูกต้อง
+
+---
+
+## ☁️ การนำไปใช้งาน (Deployment)
+
+โครงการนี้ถูกตั้งค่าให้สามารถ Deploy ผ่าน **Firebase Hosting** ได้อย่างง่ายดาย
+
+1.  **ติดตั้ง Firebase CLI (หากยังไม่มี):**
+    ```bash
+    npm install -g firebase-tools
+    ```
+
+2.  **ล็อกอินเข้าสู่ Firebase:**
+    ```bash
+    firebase login
+    ```
+
+3.  **Deploy โปรเจกต์:**
+    (รันคำสั่งนี้จากโฟลเดอร์หลักของโปรเจกต์ ที่มีไฟล์ `firebase.json` อยู่)
+    ```bash
+    firebase deploy
+    ```
