@@ -5,6 +5,17 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+<<<<<<< HEAD
+## [2.0.1.1] - 2568-12-04
+
+### เพิ่ม (Added)
+- เพิ่มปุ่ม "Try Wheel Mode as Guest" ในหน้าล็อกอิน ทำให้ผู้ใช้ที่ยังไม่ได้เข้าสู่ระบบสามารถทดลองใช้งานฟีเจอร์ Wheel Mode ได้
+
+### ปรับปรุง (Changed)
+- ย้ายตำแหน่งการแสดงผลเวอร์ชันของเว็บไซต์ไปไว้ที่มุมซ้ายล่างของหน้าจอเพื่อให้มองเห็นได้ตลอดเวลา และนำการแสดงผลเวอร์ชันจากส่วนหัวและหน้าล็อกอินออก
+
+=======
+>>>>>>> 3c5ef1bfa6f9908b7bcf66d96c317a5cd6c2158b
 
 ## [2.0.0] - 2568-12-04
 
