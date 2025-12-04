@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wording</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen active">
+        <div class="login-container">
+            <h1 class="app-title">Wording</h1>
+            <p class="app-subtitle">Your journey to word mastery starts here.</p>
+            <p id="auth-error" class="feedback" style="display: none;"></p>
+            
+            <div class="form-group">
+                <input type="email" id="email-input" placeholder="Email" class="form-input" autocomplete="email">
+            </div>
+            <div class="form-group">
+                <input type="password" id="password-input" placeholder="Password" class="form-input" autocomplete="current-password">
+            </div>
+
+            <div class="button-group">
+                <button id="login-btn" class="btn btn-primary">Sign In</button>
+                <button id="signup-btn" class="btn btn-secondary">Sign Up</button>
+            </div>
+
+            <div class="divider">
+                <span class="divider-text">or</span>
+            </div>
+
+            <div class="google-btn-container">
+                <button id="google-login-btn" class="btn btn-provider">
+                    <svg class="provider-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56,12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26,1.37-1.04,2.53-2.21,3.31v2.77h3.57c2.08-1.92,3.28-4.74,3.28-8.09Z" fill="#4285F4"/><path d="M12,23c2.97,0,5.46-.98,7.28-2.66l-3.57-2.77c-.98.66-2.23,1.06-3.71,1.06-2.86,0-5.29-1.93-6.16-4.53H2.18v2.84C3.99,20.53,7.7,23,12,23Z" fill="#34A853"/><path d="M5.84,14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43,8.55,1,10.22,1,12s.43,3.45,1.18,4.93l3.66-2.84Z" fill="#FBBC05"/><path d="M12,5.38c1.62,0,3.06.56,4.21,1.64l3.15-3.15C17.45,2.09,14.97,1,12,1,7.7,1,3.99,3.47,2.18,7.07l3.66,2.84c.87-2.6,3.3-4.53,6.16-4.53Z" fill="#EA4335"/></svg>
+                    <span>Sign in with Google</span>
+                </button>
+            </div>
+            <p class="version">Version: <span id="version-display"></span></p>
+        </div>
+    </div>
+
+    <header class="main-header" style="display: none;">
+        <h1>Wording</h1>
+        <span id="header-version-display" class="version-header"></span>
+        <div id="auth-container" class="auth-container">
+            <span id="user-display" class="user-email"></span>
+            <button id="wheel-mode-btn" class="btn">Wheel Mode</button>
+            <button id="logout-btn" class="btn btn-secondary" style="display: none;">Logout</button>
+        </div>
+    </header>
+    <div class="container" id="app-container" style="display: none;">
+        <!-- Mode Selection Screen -->
+        <div id="mode-screen" class="screen">
+            <h2>Choose your mode:</h2>
+            <div class="mode-selection-container">
+                <div id="level-mode-btn" class="btn mode-btn" role="button" tabindex="0">
+                    <div class="mode-image" id="level-mode-img"></div>
+                    <span>Level Mode</span>
+                </div>
+                <div id="custom-mode-btn" class="btn mode-btn" role="button" tabindex="0">
+                    <div class="mode-image" id="custom-mode-img"></div>
+                    <span>Custom Mode</span>
+                </div>
+            </div>
+            <div class="main-controls">
+                <button id="history-btn" class="btn">View History</button>
+            </div>
+        </div>
+
+        <!-- Level Selection Screen -->
+        <div id="level-screen" class="screen">
+            <h2>Choose your level:</h2>
+            <div id="level-buttons">
+                <!-- Level buttons will be generated here -->
+            </div>
+            <button class="btn btn-secondary back-btn">Back</button>
+        </div>
+
+        <!-- Custom Input Screen -->
+        <div id="custom-screen" class="screen">
+            <h2>Build Your Custom Quiz</h2>
+            <div class="custom-screen-layout">
+                <div class="custom-layout-left">
+                    <h3>Vocabulary List</h3>
+                    <div id="custom-vocab-form">
+                        <div class="form-row">
+                            <input type="text" id="custom-word-input" placeholder="Enter an English or Thai word">
+                        </div>
+                        <button id="add-word-btn" class="btn">Translate and Add</button>
+                    </div>
+                    <div id="custom-list-container">
+                        <p id="custom-list-placeholder">Your words will appear here. Add at least 4 to start.</p>
+                        <!-- Dynamically added words will go here -->
+                    </div>
+                </div>
+                <div class="custom-layout-right">
+                    <h3>Level Details</h3>
+                    <input type="text" id="custom-level-name-input" placeholder="ตั้งชื่อด่านของคุณ (เช่น คำศัพท์หมวดผลไม้)">
+                    <div class="custom-screen-controls">
+                        <button id="save-custom-level-btn" class="btn" disabled>บันทึกด่าน</button>
+<button id="back-to-my-levels-btn" class="btn btn-secondary">Back to My Levels</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Levels Screen -->
+        <div id="my-levels-screen" class="screen">
+            <h2>My Custom Levels</h2>
+            <div class="main-controls">
+                 <button id="go-to-create-level-btn" class="btn">Create Custom Level</button>
+            </div>
+            <div id="my-levels-container">
+                <!-- Custom levels will be generated here -->
+            </div>
+            <button class="btn btn-secondary back-btn">Back to Menu</button>
+        </div>
+
+        <!-- Quiz Options Screen -->
+        <div id="quiz-options-screen" class="screen">
+            <h2 id="quiz-options-title">Level: </h2>
+            <div class="quiz-options-container">
+                <h3>Number of Questions</h3>
+                <p>This level has <span id="total-words-count">N/A</span> words.</p>
+                <div class="form-group">
+                    <input type="number" id="num-questions-input" class="form-input" min="4" placeholder="Enter number (e.g., 10)">
+                </div>
+                <div class="button-group">
+                    <button id="all-words-btn" class="btn btn-secondary">All Words</button>
+                    <button id="start-quiz-from-options-btn" class="btn btn-primary">Start Quiz</button>
+                </div>
+            </div>
+            <button id="back-from-options-btn" class="btn btn-secondary">Back</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <h2 id="question-title">Question 1/10</h2>
+                <div class="progress-bar-container">
+                    <div id="progress-bar"></div>
+                </div>
+            </div>
+            <div class="quiz-content">
+                <div class="question-container">
+                    <p id="question-word" class="question-word"></p>
+                    <div id="choices-container" class="choices-container">
+                        <!-- Choice buttons will be generated here -->
+                    </div>
+                </div>
+            </div>
+            <p id="feedback" class="feedback"></p>
+            <div class="quiz-controls">
+                <button id="next-question-btn" class="btn">Next</button>
+                <button id="back-to-home-btn" class="btn btn-secondary">Back to Menu</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen">
+            <div class="result-screen-layout">
+                <h2 id="result-title"></h2>
+                <p id="result-score"></p>
+                <button id="restart-btn" class="btn">Back to Start</button>
+            </div>
+        </div>
+
+        <!-- History Screen (Now a Modal) -->
+        <div id="history-screen" class="screen">
+            <div class="history-screen-layout">
+                <h2>Quiz History</h2>
+                <div id="full-history-container">
+                    <!-- Full history will be generated here -->
+                </div>
+                <div class="history-controls">
+                    <button id="clear-history-btn" class="btn btn-danger">Clear All History</button>
+                    <button class="btn btn-secondary back-btn-modal">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wheel Mode Screen -->
+        <div id="wheel-screen" class="screen">
+            <h2>Wheel Mode</h2>
+            <div class="wheel-screen-layout">
+                <div class="wheel-layout-left">
+                    <div id="wheel-container">
+                        <!-- The wheel will be rendered here by JS -->
+                        <canvas id="wheel-canvas" width="400" height="400"></canvas>
+                    </div>
+                    <div class="wheel-controls">
+                        <button id="spin-btn" class="btn btn-primary">Spin</button>
+                    </div>
+                     <p id="wheel-result" class="feedback"></p>
+                </div>
+                <div class="wheel-layout-right">
+                    <h3>Your Words</h3>
+                    <div class="wheel-input-container">
+                        <textarea id="wheel-text-input" placeholder="Enter words, one per line..."></textarea>
+                        <div id="wheel-file-dropzone" class="dropzone">
+                            <p>Drag & drop a .txt file here, or click to select</p>
+                            <input type="file" id="wheel-file-input" accept=".txt" style="display: none;">
+                        </div>
+                    </div>
+                    <div id="wheel-word-list-container">
+                        <p>Imported words will appear here.</p>
+                        <ul id="wheel-word-list"></ul>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary back-btn">Back to Menu</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore-compat.js"></script>
+
+    <script src="auth.js"></script>
+    <script src="levels.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
