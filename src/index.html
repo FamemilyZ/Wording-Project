@@ -36,13 +36,20 @@
                     <span>Sign in with Google</span>
                 </button>
             </div>
-            <p class="version">Version: <span id="version-display"></span></p>
+
+            <div class="divider" style="margin-top: 1.5rem;">
+                <span class="divider-text">or</span>
+            </div>
+
+            <div class="guest-mode-container">
+                <button id="guest-wheel-mode-btn" class="btn btn-secondary">Try Wheel Mode as Guest</button>
+            </div>
+
         </div>
     </div>
 
     <header class="main-header" style="display: none;">
         <h1>Wording</h1>
-        <span id="header-version-display" class="version-header"></span>
         <div id="auth-container" class="auth-container">
             <span id="user-display" class="user-email"></span>
             <button id="wheel-mode-btn" class="btn">Wheel Mode</button>
@@ -221,5 +228,7 @@
     <script src="auth.js"></script>
     <script src="levels.js"></script>
     <script src="script.js"></script>
+
+    <div id="footer-version-display" class="footer-version"></div>
 </body>
 </html>

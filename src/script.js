@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const wheelFileInput = document.getElementById('wheel-file-input');
     const wheelWordList = document.getElementById('wheel-word-list');
     const wheelWordListContainer = document.getElementById('wheel-word-list-container');
+    const guestWheelModeBtn = document.getElementById('guest-wheel-mode-btn');
     
     // --- State ---
     let currentUser = null;
@@ -377,7 +378,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Wheel Mode Functions ---
     function processWords(text) {
-        return text.split('\n').flatMap(line => line.split(' ')).filter(word => word.length > 0);
+        // Split by newline and filter out any empty lines
+        return text.split('\n').filter(word => word.trim().length > 0);
     }
 
     function updateAndRenderWords() {
@@ -848,13 +850,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutBtn.addEventListener('click', () => logoutUser());
 
+    guestWheelModeBtn.addEventListener('click', () => {
+        loginScreen.classList.remove('active');
+        appContainer.style.display = 'flex';
+        showScreen('wheel-screen');
+        // Initialize wheel listeners if they haven't been already (e.g., for guests)
+        // We can add a check if needed, but calling it should be safe.
+        setupWheelListeners();
+    });
+
     // Quiz Navigation Listeners
     nextQuestionBtn.addEventListener('click', () => {
         currentQuestionIndex++;
         displayQuestion();
     });
 
-    backBtns.forEach(btn => btn.addEventListener('click', () => !btn.closest('#mode-screen') && showScreen('mode-screen')));
+    backBtns.forEach(btn => btn.addEventListener('click', (e) => {
+        // If the back button is inside the wheel screen AND the user is a guest
+        if (e.target.closest('#wheel-screen') && !currentUser) {
+            appContainer.style.display = 'none';
+            loginScreen.classList.add('active');
+        } else if (currentUser) {
+            // Default behavior for logged-in users
+            if (!btn.closest('#mode-screen')) {
+                 showScreen('mode-screen');
+            }
+        }
+        // If !currentUser and not in wheel-screen, do nothing (shouldn't happen)
+    }));
     
     const historyBackBtn = historyScreen.querySelector('.back-btn-modal');
     if(historyBackBtn) historyBackBtn.addEventListener('click', (e) => { e.stopPropagation(); hideHistoryModal(); });
@@ -892,13 +915,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const match = text.match(/## \[(.*?)\]/);
             if (match && match[1]) {
                 const version = match[1];
-                const versionDisplay = document.getElementById('version-display');
-                const headerVersionDisplay = document.getElementById('header-version-display');
+                const versionDisplay = document.getElementById('footer-version-display');
                 if (versionDisplay) {
-                    versionDisplay.textContent = version;
-                }
-                if (headerVersionDisplay) {
-                    headerVersionDisplay.textContent = `v${version}`;
+                    versionDisplay.textContent = `v${version}`;
                 }
             }
         } catch (error) {
