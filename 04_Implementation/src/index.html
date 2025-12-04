@@ -36,6 +36,15 @@
                     <span>Sign in with Google</span>
                 </button>
             </div>
+
+            <div class="divider" style="margin-top: 1.5rem;">
+                <span class="divider-text">or</span>
+            </div>
+
+            <div class="guest-mode-container">
+                <button id="guest-wheel-mode-btn" class="btn btn-secondary">Try Wheel Mode as Guest</button>
+            </div>
+
         </div>
     </div>
 
@@ -43,6 +52,7 @@
         <h1>Wording</h1>
         <div id="auth-container" class="auth-container">
             <span id="user-display" class="user-email"></span>
+            <button id="wheel-mode-btn" class="btn">Wheel Mode</button>
             <button id="logout-btn" class="btn btn-secondary" style="display: none;">Logout</button>
         </div>
     </header>
@@ -176,6 +186,38 @@
                 </div>
             </div>
         </div>
+
+        <!-- Wheel Mode Screen -->
+        <div id="wheel-screen" class="screen">
+            <h2>Wheel Mode</h2>
+            <div class="wheel-screen-layout">
+                <div class="wheel-layout-left">
+                    <div id="wheel-container">
+                        <!-- The wheel will be rendered here by JS -->
+                        <canvas id="wheel-canvas" width="400" height="400"></canvas>
+                    </div>
+                    <div class="wheel-controls">
+                        <button id="spin-btn" class="btn btn-primary">Spin</button>
+                    </div>
+                     <p id="wheel-result" class="feedback"></p>
+                </div>
+                <div class="wheel-layout-right">
+                    <h3>Your Words</h3>
+                    <div class="wheel-input-container">
+                        <textarea id="wheel-text-input" placeholder="Enter words, one per line..."></textarea>
+                        <div id="wheel-file-dropzone" class="dropzone">
+                            <p>Drag & drop a .txt file here, or click to select</p>
+                            <input type="file" id="wheel-file-input" accept=".txt" style="display: none;">
+                        </div>
+                    </div>
+                    <div id="wheel-word-list-container">
+                        <p>Imported words will appear here.</p>
+                        <ul id="wheel-word-list"></ul>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary back-btn">Back to Menu</button>
+        </div>
     </div>
 
     <!-- Firebase SDK -->
@@ -186,5 +228,7 @@
     <script src="auth.js"></script>
     <script src="levels.js"></script>
     <script src="script.js"></script>
+
+    <div id="footer-version-display" class="footer-version"></div>
 </body>
 </html>

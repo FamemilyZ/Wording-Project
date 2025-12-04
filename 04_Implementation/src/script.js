@@ -61,6 +61,19 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const levelButtonsContainer = document.getElementById('level-buttons');
 
+    // Wheel Mode Elements
+    const wheelModeBtn = document.getElementById('wheel-mode-btn');
+    const wheelScreen = document.getElementById('wheel-screen');
+    const wheelCanvas = document.getElementById('wheel-canvas');
+    const spinBtn = document.getElementById('spin-btn');
+    const wheelResult = document.getElementById('wheel-result');
+    const wheelTextInput = document.getElementById('wheel-text-input');
+    const wheelFileDropzone = document.getElementById('wheel-file-dropzone');
+    const wheelFileInput = document.getElementById('wheel-file-input');
+    const wheelWordList = document.getElementById('wheel-word-list');
+    const wheelWordListContainer = document.getElementById('wheel-word-list-container');
+    const guestWheelModeBtn = document.getElementById('guest-wheel-mode-btn');
+    
     // --- State ---
     let currentUser = null;
     let vocabulary = [];
@@ -72,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let customVocabularyList = [];
     let editingLevelId = null;
     let pendingQuizData = null;
+    let wheelWords = [];
 
     // --- Auth UI Functions ---
     function handleLoggedIn(user) {
@@ -86,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         showScreen('mode-screen');
         populateLevels();
+        setupWheelListeners(); // Initialize wheel mode listeners
     }
 
     function handleLoggedOut() {
@@ -162,6 +177,10 @@ document.addEventListener('DOMContentLoaded', () => {
             nextScreen.removeEventListener('animationend', onNextAnimationEnd);
         };
         nextScreen.addEventListener('animationend', onNextAnimationEnd);
+
+        if (screenId === 'wheel-screen') {
+            updateAndRenderWords(); // Initial draw when screen is shown
+        }
     }
 
     function showHistoryModal() {
@@ -357,6 +376,200 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Wheel Mode Functions ---
+    function processWords(text) {
+        // Split by newline and filter out any empty lines
+        return text.split('\n').filter(word => word.trim().length > 0);
+    }
+
+    function updateAndRenderWords() {
+        wheelWords = processWords(wheelTextInput.value);
+        renderWheelWordList();
+        drawWheel();
+    }
+
+    function renderWheelWordList() {
+        wheelWordList.innerHTML = '';
+        if (wheelWords.length === 0) {
+            wheelWordListContainer.innerHTML = '<p>Imported words will appear here.</p>';
+            return;
+        }
+        wheelWordListContainer.innerHTML = ''; // Clear placeholder
+        const list = document.createElement('ul');
+        list.id = 'wheel-word-list';
+        wheelWords.forEach(word => {
+            const li = document.createElement('li');
+            li.textContent = word;
+            list.appendChild(li);
+        });
+        wheelWordListContainer.appendChild(list);
+    }
+    
+    function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (file) {
+            readFile(file);
+        }
+    }
+
+    function handleFileDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        wheelFileDropzone.classList.remove('dragging');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type === "text/plain") {
+            readFile(file);
+        } else {
+            alert('Please drop a .txt file.');
+        }
+    }
+
+    function readFile(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const fileContent = e.target.result;
+            const fileWords = processWords(fileContent);
+            
+            // Combine words from textarea and file, ensuring no duplicates
+            const textWords = processWords(wheelTextInput.value);
+            const combinedWords = [...new Set([...textWords, ...fileWords])];
+            
+            wheelTextInput.value = combinedWords.join('\n');
+            
+            // Now that the textarea is updated, let the main function handle the rest
+            updateAndRenderWords();
+        };
+        reader.readAsText(file);
+    }
+
+    let isSpinning = false;
+    let currentRotation = 0;
+    const wheelColors = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981", "#F59E0B", "#3B82F6", "#EF4444"];
+
+    function drawWheel() {
+        const ctx = wheelCanvas.getContext('2d');
+        const numSegments = wheelWords.length;
+        const arcSize = 2 * Math.PI / (numSegments || 1);
+        const centerX = wheelCanvas.width / 2;
+        const centerY = wheelCanvas.height / 2;
+        const radius = wheelCanvas.width / 2 - 10;
+
+        ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(currentRotation);
+        ctx.translate(-centerX, -centerY);
+
+
+        if (numSegments === 0) {
+            ctx.fillStyle = '#333';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px ' + getComputedStyle(document.body).fontFamily;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Add words to begin', centerX, centerY);
+            return;
+        }
+
+        for (let i = 0; i < numSegments; i++) {
+            const startAngle = i * arcSize;
+            const endAngle = startAngle + arcSize;
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+            ctx.closePath();
+            
+            ctx.fillStyle = wheelColors[i % wheelColors.length];
+            ctx.fill();
+            
+            // Draw text
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(startAngle + arcSize / 2);
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#fff';
+            ctx.font = '16px ' + getComputedStyle(document.body).fontFamily;
+            ctx.fillText(wheelWords[i], radius - 15, 0);
+            ctx.restore();
+        }
+
+        ctx.restore(); // Restore the main context
+
+        // Draw the pointer
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.moveTo(centerX + radius - 5, centerY - 15);
+        ctx.lineTo(centerX + radius + 15, centerY);
+        ctx.lineTo(centerX + radius - 5, centerY + 15);
+        ctx.closePath();
+        ctx.fill();
+    }
+    
+    function spinWheel() {
+        if (isSpinning || wheelWords.length < 2) return;
+
+        isSpinning = true;
+        spinBtn.disabled = true;
+        wheelResult.textContent = '';
+        
+        const spinDuration = 5000; // 5 seconds
+        const randomSpins = Math.floor(Math.random() * 5) + 5; // 5 to 9 full spins
+        const randomStopIndex = Math.floor(Math.random() * wheelWords.length);
+        const arcSize = (2 * Math.PI) / wheelWords.length;
+        const randomStopAngle = randomStopIndex * arcSize + arcSize / 2;
+
+        const targetRotation = (randomSpins * 2 * Math.PI) - randomStopAngle;
+
+        currentRotation += targetRotation;
+        
+        wheelCanvas.style.transition = `transform ${spinDuration / 1000}s cubic-bezier(0.25, 0.1, 0.25, 1)`;
+        wheelCanvas.style.transform = `rotate(${currentRotation}rad)`;
+
+        setTimeout(() => {
+            isSpinning = false;
+            spinBtn.disabled = false;
+            
+            const winningWord = wheelWords[randomStopIndex];
+            wheelResult.textContent = `Winner: ${winningWord}!`;
+
+            // Keep the wheel at its final position for the next spin
+            wheelCanvas.style.transition = 'none';
+            const finalRotation = currentRotation % (2 * Math.PI);
+            wheelCanvas.style.transform = `rotate(${finalRotation}rad)`;
+            currentRotation = finalRotation;
+
+        }, spinDuration);
+    }
+
+    function setupWheelListeners() {
+        wheelTextInput.addEventListener('input', updateAndRenderWords);
+        
+        // File Dropzone
+        wheelFileDropzone.addEventListener('click', () => wheelFileInput.click());
+        wheelFileInput.addEventListener('change', handleFileSelect);
+        
+        wheelFileDropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            wheelFileDropzone.classList.add('dragging');
+        });
+
+        wheelFileDropzone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            wheelFileDropzone.classList.remove('dragging');
+        });
+
+        wheelFileDropzone.addEventListener('drop', handleFileDrop);
+
+        spinBtn.addEventListener('click', spinWheel);
+    }
+
+
     // --- New Custom Mode Functions ---
     function renderCustomList() {
         customListContainer.innerHTML = '';
@@ -378,6 +591,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         updateSaveButtonState();
     }
+
 
     async function translateAndAddWord() {
         const word = customWordInput.value.trim();
@@ -569,6 +783,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showScreen('my-levels-screen');
         loadAndDisplayMyLevels();
     });
+    wheelModeBtn.addEventListener('click', () => showScreen('wheel-screen'));
     goToCreateLevelBtn.addEventListener('click', () => {
         // Clear form for new level creation
         editingLevelId = null; // Clear editing state
@@ -635,13 +850,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutBtn.addEventListener('click', () => logoutUser());
 
+    guestWheelModeBtn.addEventListener('click', () => {
+        loginScreen.classList.remove('active');
+        appContainer.style.display = 'flex';
+        showScreen('wheel-screen');
+        // Initialize wheel listeners if they haven't been already (e.g., for guests)
+        // We can add a check if needed, but calling it should be safe.
+        setupWheelListeners();
+    });
+
     // Quiz Navigation Listeners
     nextQuestionBtn.addEventListener('click', () => {
         currentQuestionIndex++;
         displayQuestion();
     });
 
-    backBtns.forEach(btn => btn.addEventListener('click', () => !btn.closest('#mode-screen') && showScreen('mode-screen')));
+    backBtns.forEach(btn => btn.addEventListener('click', (e) => {
+        // If the back button is inside the wheel screen AND the user is a guest
+        if (e.target.closest('#wheel-screen') && !currentUser) {
+            appContainer.style.display = 'none';
+            loginScreen.classList.add('active');
+        } else if (currentUser) {
+            // Default behavior for logged-in users
+            if (!btn.closest('#mode-screen')) {
+                 showScreen('mode-screen');
+            }
+        }
+        // If !currentUser and not in wheel-screen, do nothing (shouldn't happen)
+    }));
     
     const historyBackBtn = historyScreen.querySelector('.back-btn-modal');
     if(historyBackBtn) historyBackBtn.addEventListener('click', (e) => { e.stopPropagation(); hideHistoryModal(); });
@@ -667,4 +903,27 @@ document.addEventListener('DOMContentLoaded', () => {
             handleLoggedOut();
         }
     });
+
+    // --- Version Display ---
+    async function displayVersion() {
+        try {
+            const response = await fetch('../../CHANGELOG.md');
+            if (!response.ok) {
+                throw new Error('Changelog not found');
+            }
+            const text = await response.text();
+            const match = text.match(/## \[(.*?)\]/);
+            if (match && match[1]) {
+                const version = match[1];
+                const versionDisplay = document.getElementById('footer-version-display');
+                if (versionDisplay) {
+                    versionDisplay.textContent = `v${version}`;
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching or parsing version:', error);
+        }
+    }
+
+    displayVersion();
 });
